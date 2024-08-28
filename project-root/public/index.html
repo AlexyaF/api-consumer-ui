@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles_reset.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles_table.css">
+    <title>Consulta status ENEL</title>
+
+    
+</head>
+<body>
+    <section class="menu collapsed">
+        <div id="menu__icons">
+            <div class="menu__icon__container logo">
+                <img src="/project-root/image/crefaz_icon_branco_s.png" alt="icon crefaz" id="crefaz_icon" class="hidden">
+            </div>
+            <div class="menu__icon__container menu">
+                <img src="/project-root/image/menu.png" alt="imagem menu" id="menu_icon" onclick="toggleMenu()" >
+            </div>
+        </div>n
+    </section>
+
+    <section class = "consulta">
+        <h1 class="consulta__titulo">Consulta Status Operações</h1>
+    <div class="box">
+
+        <div class = consulta__box>
+            <form onsubmit="event.preventDefault(); consultar();" class="consulta__box__forms">
+                <input type="text" id="operationIds" placeholder="Insira as operações(separados por vírgula)" class="consulta__box__input">
+                <button type="submit" class = "consulta__box__botao">
+                    <img src="/project-root/image/icon.png" alt="lupa pesquisa" class="consulta__box__botao__icon">
+                </button>
+            </form>
+        </div>
+
+        <div class="result__box" id="result">
+        </div>
+
+    </div>
+    </section>
+    <script src="/project-root/public/js/script.js"></script>
+    <script src="/project-root/public/js/interactions.js"></script>
+</body>
+</html>

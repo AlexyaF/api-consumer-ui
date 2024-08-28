@@ -1,0 +1,63 @@
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+
+
+:root {
+    --cinza : #F2F1F0;
+    --cinza_claro : #F0EFF6;
+    --azul_escuro: #163056;
+    --azul_claro : #6c7c9c9e;
+    --transparente:#f2f1f000;
+    --preto:black;
+    --font_principal:"Ubuntu", sans-serif;
+
+
+
+}
+
+.result__box{
+    width:100%;
+    height: 100%;
+    padding: 20px 0px 0px 0px;
+    overflow-y: auto;
+}
+
+
+.table {
+    width:100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table thead th {
+    font-size: 12px;
+    font-family: var(--font_principal);
+    font-weight: 400;
+    background: var(--cinza)
+}
+
+.table.table{
+    width: 100%;
+    border-radius: 5px !important;
+    overflow: hidden;
+    margin: 0%;
+}
+
+.table td, .table th {
+    padding: 10px 0px 10px 0px;
+    border-top: none;
+    text-align:center;
+}
+
+.table tbody td{
+    font-size: 12px;
+}
+
+.table tbody tr{
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#F6F6F6, #EAEAEA);
+}
+
+.table tbody tr:hover{
+    background: linear-gradient(#F6F6F6, #cecece);
+}
