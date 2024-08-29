@@ -1,6 +1,6 @@
 function toggleMenu() {
     const menu = document.querySelector('.menu');
-    const image = document.getElementById('crefaz_icon'); 
+    const image = document.getElementById('logo_icon'); 
     const icons = document.getElementById('menu__icons'); 
     const container_icon = document.querySelector('.menu__icon__container.logo');
 
@@ -24,6 +24,6 @@ function toggleMenu() {
             icons.classList.remove('menu__icons_collapsed'); // Remove a classe colapsada
         }
     } else {
-        console.error('Elemento com a classe "menu", ID "crefaz_icon" ou "menu__icons" não encontrado.');
+        console.error('Elemento com a classe "menu", ID "logo_icon" ou "menu__icons" não encontrado.');
     }
 }

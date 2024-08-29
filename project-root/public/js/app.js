@@ -3,7 +3,11 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const mysql = require('mysql2/promise');
 const path = require('path');
+const fs = require('fs').promises;
 const cors = require('cors');
+
+
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const app = express();
 const port = 3000;
@@ -18,29 +22,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurar a conexão com o banco de dados MySQL
 const dbConfig = {
-    host: '54.232.150.39',
-    user: 'cliente_crefaz_afortunato',
-    password: 'j9X6JVASTo#CzR&n',
-    database: 'crefazscm_webscm',
-    port: 3313
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
 };
+
+
 
 // Função para obter o token
 async function getToken() {
     const data = new URLSearchParams({
-        grant_type: 'client_credentials',
+        grant_type: process.env.API_GRANT_TYPE,
     });
 
     const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://api-prod-local.enelx.com/services/token/oauth2',
+        url:process.env.API_URL_TOKEN,
         headers: { 
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         auth: {
-            username: '9us4qgtu7uw73cdje98z3haa',
-            password: 'AMUTdU33hX'
+            username: process.env.API_USER,
+            password: process.env.API_PASSWORD
         },
         data: data.toString()
     };
@@ -54,6 +60,21 @@ async function getToken() {
     }
 }
 
+
+// Função para ler a consulta SQL do arquivo
+async function getQuery() {
+    try {
+        const queryPath = path.join(__dirname, '..','..', 'sql', 'query_consulta.sql');
+        const query = await fs.readFile(queryPath, 'utf8');
+        return query;
+    } catch (error) {
+        console.error('Erro ao ler o arquivo de consulta SQL:', error.message);
+        throw error;
+    }
+}
+
+
+
 // Definir a rota /api/consulta
 app.post('/api/consulta', async (req, res) => {
     const operationIds = req.body.operationIds;
@@ -66,60 +87,38 @@ app.post('/api/consulta', async (req, res) => {
 
     try {
         const db = await mysql.createConnection(dbConfig);
+
+        // Obter a query SQL do arquivo
+        const sqlQuery = await getQuery();
         
-        const [rows] = await db.query(`
-            SELECT
-                CAST(op.CODOPERACAO AS UNSIGNED) AS CODOPERACAO,
-                REPLACE(FORMAT(op.VL_FACEOP, 2), ',', '.') AS VALOR,
-                CASE 
-                    WHEN op.CIA_ELETRICA = 73 THEN 2003
-                    WHEN op.CIA_ELETRICA = 5 THEN 2005
-                    WHEN op.CIA_ELETRICA = 27 THEN 'MT10'
-                END AS empresa,
-                CAST(op.UNI_CONSUMIDORA_COB AS UNSIGNED) AS numeroCliente,
-                CASE
-                    WHEN op.CODPRODUTO IN (1, 6) AND op.CIA_ELETRICA = 5 THEN '55032005'
-                    WHEN op.CODPRODUTO IN (1, 6) AND op.CIA_ELETRICA = 73 THEN '87012003'
-                    WHEN op.CODPRODUTO = 30 AND op.CIA_ELETRICA = 73 THEN '57302003'
-                    WHEN op.CODPRODUTO IN (1, 6) AND op.CIA_ELETRICA = 27 THEN '06HB142997'
-                    WHEN op.CODPRODUTO = 15 AND op.CIA_ELETRICA = 5 THEN '55042005'
-                    WHEN op.CODPRODUTO = 15 AND op.CIA_ELETRICA = 73 THEN '87022003'
-                    WHEN op.CODPRODUTO = 15 AND op.CIA_ELETRICA = 27 THEN '06HB582997'
-                END AS codProduto_XC,
-                op.DATASTATUS AS dataOcorrencia
-            FROM
-                operacao op
-                INNER JOIN clientes cl ON cl.CODCLIENTE = op.CODCLIENTE
-                LEFT JOIN rup r ON r.CPFCNPJ = cl.CPFCNPJ
-                LEFT JOIN ciaeletrica cia ON cia.CODCIAELETRICA = op.CIA_ELETRICA
-            WHERE
-                op.CODOPERACAO IN (?)
-            GROUP BY op.CODOPERACAO
-            ORDER BY op.CODOPERACAO ASC
-        `, [operationIds]);
+        const [rows] = await db.query(sqlQuery, [operationIds]);
 
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Nenhum registro encontrado.' });
         }
 
         const token = await getToken();
-        console.log(token);
 
         const resultPromises = rows.map(async (record) => {
             try {
-                const response = await axios.get(`https://api-prod-local.enelx.com/services/bdp/v1/subscription-history?empresa=${record.empresa}&numeroCliente=${record.numeroCliente}&empresaParc=BRA-Crefaz&codProduto=${record.codProduto_XC}`, {
+                const response = await axios.get(process.env.API_URL_CONSULTA, {
+                    params: {
+                        empresa: record.empresa,
+                        numeroCliente: record.numeroCliente,
+                        empresaParc: 'BRA-Crefaz',
+                        codProduto: record.codProduto_XC
+                    }, 
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json; charset=UTF-8',
                         'Operation': 'Read',
                         'Functionality': 'Read',
-                        'ClientSystem': 'BRA-Crefaz',
-                        'ServerSystem': 'XCustomerB2CBR'
+                        'ClientSystem': process.env.EMPRESA_PARC,
+                        'ServerSystem': process.env.SERVER_SYSTEM
                     }
                 });
 
                 const apiData = response.data;
-                console.log(apiData);
 
                 if (Array.isArray(apiData)) {
                     const filteredResults = apiData.filter(item => parseFloat(item.valor) === parseFloat(record.VALOR));

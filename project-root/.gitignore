@@ -1,0 +1,18 @@
+# Ignorar diretórios de dependências
+node_modules/
+
+# Ignorar arquivos de configuração locais
+.env
+
+# Ignorar arquivos SQL
+sql/*sql
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos temporários
+*.tmp
+
+# Ignorar arquivos de compilação
+dist/
+build/
