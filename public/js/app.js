@@ -64,7 +64,7 @@ async function getToken() {
 // Função para ler a consulta SQL do arquivo
 async function getQuery() {
     try {
-        const queryPath = path.join(__dirname, '..','..', 'sql', 'query_consulta.sql');
+        const queryPath = path.join(__dirname, '..','..', 'sql', 'query.sql');
         const query = await fs.readFile(queryPath, 'utf8');
         return query;
     } catch (error) {
