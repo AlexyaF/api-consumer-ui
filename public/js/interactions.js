@@ -3,6 +3,7 @@ function toggleMenu() {
     const image = document.getElementById('logo_icon'); 
     const icons = document.getElementById('menu__icons'); 
     const container_icon = document.querySelector('.menu__icon__container.logo');
+    const container_options = document.querySelector('.menu__icon__container.options')
 
     if (menu && image && icons) {
         // Alterna as classes "collapsed" e "expanded" no menu

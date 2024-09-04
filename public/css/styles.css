@@ -45,12 +45,36 @@ body {
 }
 
 .menu__icons_expanded{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-areas:
+        "logo icon_menu"
+        "options options";
+    justify-content: space-;
+    align-items: center;
+    width: 100%;
+    height: 30%;
+
 }
 
+.menu__icon__container.logo {
+    grid-area: logo;
+    justify-self: start; /* Alinhar à esquerda */
+}
 
+.menu__icon__container.menu {
+    grid-area: icon_menu;
+    justify-self: end; /* Alinhar à direita */
+}
+
+.menu__icon__container.options {
+    margin-top: 70px;
+    align-items: flex-start;
+    margin-left: 5px;
+}
+.menu__icon__container.options img {
+    margin-bottom: 15px;
+    cursor: pointer;
+}
 
 #menu_icon{
     cursor: pointer !important;
@@ -61,10 +85,10 @@ body {
 
 .menu__icon__container {
     display: flex;
+    flex-direction: column ;
     justify-content: center;
     padding: 5px;
-    align-items: center;
-
+    align-items:center;
 }
 
 #logo_icon{
